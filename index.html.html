@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Logic Quest: พิชิตอาณาจักรไซเบอร์ (ป.5)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        h1, h2, h3, h4, .font-kanit {
+            font-family: 'Kanit', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #60a5fa;
+        }
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        canvas {
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-blue-600 rounded-lg text-white shadow-md">
+                    <i data-lucide="cpu" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
+                        Cyber Logic Quest
+                    </h1>
+                    <p class="text-xs text-slate-400">แผนงานและเกมวิทยาการณ์คำนวณ ชั้นประถมศึกษาปีที่ 5</p>
+                </div>
+            </div>
+
+            <!-- Tab Buttons -->
+            <nav class="flex flex-wrap gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/50">
+                <button onclick="switchTab('game-tab')" id="btn-game-tab" class="tab-btn active px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-blue-600 text-white shadow">
+                    <i data-lucide="gamepad-2" class="w-4 h-4"></i> ทดลองเล่นเกม (Live Game)
+                </button>
+                <button onclick="switchTab('concept-tab')" id="btn-concept-tab" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> แนวคิดและเนื้อหา
+                </button>
+                <button onclick="switchTab('tech-tab')" id="btn-tech-tab" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="code" class="w-4 h-4"></i> โครงสร้างเทคนิค/Scratch
+                </button>
+                <button onclick="switchTab('ai-tab')" id="btn-ai-tab" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="image" class="w-4 h-4"></i> พรอมต์ AI กราฟิก
+                </button>
+                <button onclick="switchTab('pedagogy-tab')" id="btn-pedagogy-tab" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                    <i data-lucide="graduation-cap" class="w-4 h-4"></i> แผนการสอนและประเมิน
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- TAB 1: LIVE PLAYABLE GAME -->
+        <section id="game-tab" class="tab-content block space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
+                <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="sparkles" class="text-yellow-400"></i> เกม 2D: Cyber Logic Quest
+                        </h2>
+                        <p class="text-sm text-slate-400">ช่วย "น้องโค้ดดี้" ถอดรหัสตรรกะ หลบไวรัส ตอบคำถามภัยไซเบอร์ และเก็บกุญแจให้ครบ 3 ดอกเพื่อเปิดประตู Master Firewall!</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="sound-btn" onclick="toggleSound()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-slate-300 text-xs flex items-center gap-2 transition">
+                            <i data-lucide="volume-2" id="sound-icon" class="w-4 h-4 text-green-400"></i> <span id="sound-text">เปิดเสียง</span>
+                        </button>
+                        <button onclick="restartGame()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition flex items-center gap-2 shadow">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> เริ่มใหม่ (Restart)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- HUD Status Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                        <i data-lucide="heart" class="text-red-500 fill-red-500 w-5 h-5"></i>
+                        <div>
+                            <div class="text-xs text-slate-400">พลังชีวิต (Lives)</div>
+                            <div id="hud-lives" class="text-lg font-bold text-red-400">❤️❤️❤️</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                        <i data-lucide="trophy" class="text-yellow-400 w-5 h-5"></i>
+                        <div>
+                            <div class="text-xs text-slate-400">คะแนน (Score)</div>
+                            <div id="hud-score" class="text-lg font-bold text-yellow-400">0</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                        <i data-lucide="key" class="text-cyan-400 w-5 h-5"></i>
+                        <div>
+                            <div class="text-xs text-slate-400">กุญแจตรรกะ (Keys)</div>
+                            <div id="hud-keys" class="text-lg font-bold text-cyan-400">0 / 3</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
+                        <i data-lucide="timer" class="text-amber-400 w-5 h-5"></i>
+                        <div>
+                            <div class="text-xs text-slate-400">เวลา (Timer)</div>
+                            <div id="hud-timer" class="text-lg font-bold text-amber-400">120 วิ</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Canvas Box -->
+                <div class="relative w-full aspect-[4/3] max-w-[800px] mx-auto bg-slate-950 rounded-xl overflow-hidden border-2 border-slate-800 shadow-inner flex justify-center items-center">
+                    <canvas id="gameCanvas" width="800" height="600" class="w-full h-full object-contain block"></canvas>
+
+                    <!-- Overlay Screen: Start Screen -->
+                    <div id="start-overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col justify-center items-center text-center p-6 z-20">
+                        <div class="w-16 h-16 bg-blue-600/20 border-2 border-blue-500 rounded-2xl flex items-center justify-center mb-4 text-blue-400 glow-effect">
+                            <i data-lucide="shield-alert" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-3xl font-extrabold text-white mb-2">Cyber Logic Quest</h3>
+                        <p class="text-slate-300 max-w-md text-sm mb-6 leading-relaxed">
+                            ระบบเครือข่ายโรงเรียนถูกไวรัสโจมตี! คุณต้องบังคับ "โค้ดดี้" เก็บ <span class="text-cyan-400 font-semibold">กุญแจตรรกะ 3 ดอก</span>, หลบหลีก <span class="text-red-400 font-semibold">ไวรัส/ข่าวปลอม</span> และแก้ไข <span class="text-purple-400 font-semibold">ด่านคำถามไซเบอร์</span> เพื่อไปยังประตูทางออก!
+                        </p>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-left text-xs text-slate-300 mb-6 space-y-1">
+                            <p>🎮 <strong>ปุ่มควบคุม:</strong> ลูกศร <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">↑</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">↓</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">→</kbd> หรือ <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">W A S D</kbd></p>
+                            <p>💎 <strong>เพชรข้อมูลปลอดภัย:</strong> +100 คะแนน | 🔑 <strong>กุญแจตรรกะ:</strong> +200 คะแนน</p>
+                            <p>👾 <strong>ศัตรูไวรัส/ข่าวปลอม:</strong> ลบพลังชีวิต 1 ดวง</p>
+                        </div>
+                        <button onclick="startGame()" class="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-bold text-lg rounded-xl shadow-lg transition transform hover:scale-105 active:scale-95 flex items-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5 fill-white"></i> เริ่มภารกิจเล่นเกม
+                        </button>
+                    </div>
+
+                    <!-- Overlay Screen: Quiz Checkpoint Modal -->
+                    <div id="quiz-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col justify-center items-center p-6 z-30">
+                        <div class="max-w-lg w-full bg-slate-900 border border-blue-500/40 rounded-2xl p-6 shadow-2xl">
+                            <div class="flex items-center gap-2 text-cyan-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                                <i data-lucide="help-circle" class="w-4 h-4"></i> จุดเช็กพอยต์ประเมินความรู้ (Logic & Cyber Checkpoint)
+                            </div>
+                            <h4 id="quiz-question" class="text-lg font-bold text-white mb-4">คำถามจะแสดงที่นี่...</h4>
+                            <div id="quiz-options" class="space-y-2 mb-4">
+                                <!-- Options dynamically injected -->
+                            </div>
+                            <div id="quiz-explanation" class="hidden p-3 bg-slate-800 rounded-xl border border-slate-700 text-xs text-slate-300 mb-4">
+                                <!-- Explanation text -->
+                            </div>
+                            <button id="quiz-next-btn" onclick="closeQuiz()" class="hidden w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-sm transition">
+                                เดินหน้าต่อ! 🚀
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Overlay Screen: Game Over -->
+                    <div id="gameover-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col justify-center items-center text-center p-6 z-30">
+                        <div class="w-16 h-16 bg-red-600/20 border-2 border-red-500 rounded-2xl flex items-center justify-center mb-4 text-red-500">
+                            <i data-lucide="x-circle" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-3xl font-extrabold text-red-400 mb-2">ภารกิจล้มเหลว! (Game Over)</h3>
+                        <p id="gameover-reason" class="text-slate-300 text-sm mb-6 max-w-sm">พลังชีวิตหมดลง หรือ เวลาหมดก่อนจะพิชิตระบบ!</p>
+                        <button onclick="restartGame()" class="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2">
+                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i> ลองใหม่อีกครั้ง
+                        </button>
+                    </div>
+
+                    <!-- Overlay Screen: Victory Screen -->
+                    <div id="victory-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col justify-center items-center text-center p-6 z-30">
+                        <div class="w-16 h-16 bg-emerald-600/20 border-2 border-emerald-500 rounded-2xl flex items-center justify-center mb-4 text-emerald-400 glow-effect">
+                            <i data-lucide="award" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-300 mb-2">ภารกิจสำเร็จ! (Victory)</h3>
+                        <p class="text-slate-300 text-sm mb-4">ยินดีด้วย! คุณสามารถปกป้องระบบไซเบอร์ของโรงเรียนได้สำเร็จ</p>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-6 w-full max-w-xs space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">คะแนนรวม:</span>
+                                <span id="final-score" class="font-bold text-yellow-400">0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">เวลาที่ใช้:</span>
+                                <span id="final-time" class="font-bold text-cyan-400">0 วินาที</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">ระดับความเชี่ยวชาญ:</span>
+                                <span id="final-rank" class="font-bold text-emerald-400">Cyber Hero</span>
+                            </div>
+                        </div>
+                        <button onclick="restartGame()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5"></i> เล่นใหม่อีกครั้ง
+                        </button>
+                    </div>
+                </div>
+
+                <!-- On-Screen Controls for Mobile/Touch -->
+                <div class="mt-4 flex flex-col items-center sm:hidden">
+                    <p class="text-xs text-slate-400 mb-2">การควบคุมสำหรับจอสัมผัส (Touch Controls)</p>
+                    <div class="grid grid-cols-3 gap-2 w-48 text-center">
+                        <div></div>
+                        <button ontouchstart="handleTouch('Up')" class="p-3 bg-slate-800 active:bg-blue-600 rounded-lg text-white font-bold border border-slate-700">▲</button>
+                        <div></div>
+                        <button ontouchstart="handleTouch('Left')" class="p-3 bg-slate-800 active:bg-blue-600 rounded-lg text-white font-bold border border-slate-700">◄</button>
+                        <button ontouchstart="handleTouch('Down')" class="p-3 bg-slate-800 active:bg-blue-600 rounded-lg text-white font-bold border border-slate-700">▼</button>
+                        <button ontouchstart="handleTouch('Right')" class="p-3 bg-slate-800 active:bg-blue-600 rounded-lg text-white font-bold border border-slate-700">►</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CONCEPT & STORYLINE -->
+        <section id="concept-tab" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="book-open" class="text-blue-400"></i> 1. แนวคิดและเนื้อหาเกม (Game Concept & Storyline)
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3">
+                        <h3 class="text-lg font-semibold text-cyan-300 flex items-center gap-2">
+                            <i data-lucide="gamepad-2" class="w-5 h-5"></i> ชื่อเกมและเรื่องราว (Storyline)
+                        </h3>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            <strong>ชื่อเกม:</strong> Cyber Logic Quest: พิชิตอาณาจักรไซเบอร์<br>
+                            <strong>รูปแบบเกม:</strong> 2D Top-Down Cyber-Puzzle Adventure<br>
+                            <strong>เรื่องราวสั้น:</strong> "น้องโค้ดดี้" (Codie) นักเรียนชั้น ป.5 ถูกดึงเข้าไปในโลกดิจิทัลของโรงเรียนที่กำลังถูก <span class="text-red-400">"จอมลวงโลก Fake News"</span> และ <span class="text-purple-400">"ไวรัสสแปม"</span> ยึดครอง ระบบรักษาความปลอดภัยปิดตัวลง! โค้ดดี้ต้องใช้ **เหตุผลเชิงตรรกะ** ในการแก้ปริศนา ค้นหา **กุญแจตรรกะ 3 ดอก** และตอบคำถามความปลอดภัยไซเบอร์เพื่อเปิดประตู **Master Firewall** กอบกู้ระบบโรงเรียนให้กลับมาปลอดภัย
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3">
+                        <h3 class="text-lg font-semibold text-emerald-400 flex items-center gap-2">
+                            <i data-lucide="target" class="w-5 h-5"></i> วัตถุประสงค์การเรียนรู้ (Learning Objectives)
+                        </h3>
+                        <p class="text-xs text-slate-400 font-medium">สอดคล้องกับตัวชี้วัด กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี (วิทยาการคำนวณ) ชั้น ป.5:</p>
+                        <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside">
+                            <li><strong>ตัวชี้วัด ว 4.2 ป.5/1:</strong> ใช้เหตุผลเชิงตรรกะในการแก้ปัญหา การอธิบายการทำงาน การคาดการณ์ผลลัพธ์จากปัญหาอย่างง่าย</li>
+                            <li><strong>ตัวชี้วัด ว 4.2 ป.5/2:</strong> ออกแบบ และเขียนโปรแกรมอย่างง่าย โดยใช้ซอฟต์แวร์หรือสื่อ และตรวจหาข้อผิดพลาดและแก้ไข</li>
+                            <li><strong>ตัวชี้วัด ว 4.2 ป.5/3:</strong> ใช้เทคโนโลยีสารสนเทศอย่างปลอดภัย มีมารยาท เข้าใจสิทธิและหน้าที่ของตน เคารพในสิทธิของผู้อื่น แจ้งผู้เกี่ยวข้องเมื่อพบข้อมูลหรือบุคคลที่ไม่เหมาะสม</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Rules & Mechanics Detailed breakdown -->
+                <div class="mt-6 bg-slate-950 p-5 rounded-xl border border-slate-800">
+                    <h3 class="text-lg font-semibold text-yellow-400 mb-3 flex items-center gap-2">
+                        <i data-lucide="shield" class="w-5 h-5"></i> ระบบการเล่น และกติกา (Gameplay & Rules)
+                    </h3>
+                    <div class="grid sm:grid-cols-3 gap-4 text-sm">
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="font-bold text-cyan-300 block mb-1">🎮 การควบคุม</span>
+                            ใช้ปุ่ม Arrow Keys หรือ WASD ในการเดิน 4 ทิศทาง (ขึ้น, ลง, ซ้าย, ขวา)
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="font-bold text-emerald-400 block mb-1">🏆 เงื่อนไขการชนะ</span>
+                            เก็บกุญแจตรรกะครบ 3 ดอก + ตอบคำถามจุดเช็กพอยต์ถูกต้อง + เดินเข้าประตู Master Firewall
+                        </div>
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <span class="font-bold text-red-400 block mb-1">❌ เงื่อนไขการแพ้</span>
+                            พลังชีวิต (Lives) ลดลงเหลือ 0 จากการชนไวรัส หรือ เวลา (Timer 120 วิ) หมดลง
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: TECHNICAL & SCRATCH STRUCTURE -->
+        <section id="tech-tab" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="code" class="text-purple-400"></i> 3. โครงสร้างเทคนิค และตัวอย่าง Scratch (Technical Architecture)
+                    </h2>
+                    <p class="text-sm text-slate-400">ข้อมูลโครงสร้างตัวแปร Sprites และอัลกอริทึมสำหรับนำไปสร้างต่อในโปรแกรม Scratch</p>
+                </div>
+
+                <!-- Sprites & Variables Table -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <h3 class="text-md font-bold text-cyan-300 mb-3">รายการ Sprites และ Backdrops</h3>
+                        <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-400">
+                                    <th class="py-2">ชื่อ Element</th>
+                                    <th class="py-2">บทบาท / หน้าที่</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/50">
+                                <tr><td class="py-2 font-mono text-yellow-300">Player (Codie)</td><td>ตัวละครหลัก ควบคุมการเดิน 4 ทิศทาง ตรวจจับการชน</td></tr>
+                                <tr><td class="py-2 font-mono text-red-400">Virus_Patrol</td><td>ศัตรู เดินไป-กลับตามแนวตั้ง/แนวนอน ตรวจจับการแตะตัวผู้เล่น</td></tr>
+                                <tr><td class="py-2 font-mono text-cyan-400">Logic_Key</td><td>ไอเทมกุญแจ เมื่อผู้เล่นแตะจะซ่อนตัวและ +1 Keys</td></tr>
+                                <tr><td class="py-2 font-mono text-purple-400">Quiz_Gate</td><td>จุดเช็กพอยต์คำถาม หยุดผู้เล่นและเรียก Broadcast "ShowQuiz"</td></tr>
+                                <tr><td class="py-2 font-mono text-emerald-400">Master_Door</td><td>ประตูทางออก เปิดเมื่อ `Keys == 3` และผ่านจุดเช็กพอยต์</td></tr>
+                                <tr><td class="py-2 font-mono text-slate-400">Backdrop_Cyber</td><td>ฉากหลังตารางไซเบอร์ และแนวกำแพงกั้น (Maze Grid)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <h3 class="text-md font-bold text-emerald-400 mb-3">รายการ Variables (ตัวแปร)</h3>
+                        <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-400">
+                                    <th class="py-2">ชื่อ Variable</th>
+                                    <th class="py-2">ชนิด / ค่าเริ่มต้น</th>
+                                    <th class="py-2">คำอธิบาย</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/50">
+                                <tr><td class="py-2 font-mono text-cyan-300">Score</td><td>Number (0)</td><td>คะแนนสะสมของผู้เล่น</td></tr>
+                                <tr><td class="py-2 font-mono text-red-400">Lives</td><td>Number (3)</td><td>จำนวนหัวใจ/พลังชีวิต</td></tr>
+                                <tr><td class="py-2 font-mono text-amber-400">Timer</td><td>Number (120)</td><td>เวลาถอยหลัง (วินาที)</td></tr>
+                                <tr><td class="py-2 font-mono text-blue-400">KeysCollected</td><td>Number (0)</td><td>จำนวนกุญแจตรรกะที่เก็บได้</td></tr>
+                                <tr><td class="py-2 font-mono text-purple-400">IsQuizActive</td><td>Boolean (False)</td><td>สถานะเปิด/ปิด หน้าต่างคำถาม</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Scratch Pseudocode Logic -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="text-md font-bold text-yellow-300 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-5 h-5"></i> แนวทางการเขียนบล็อก Scratch (Scratch Block Architecture)
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 text-xs font-mono">
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <div class="text-blue-400 font-bold mb-2">// 1. การเคลื่อนที่และตรวจจับการชนกำแพง (Player Movement)</div>
+                            <pre class="text-slate-300 leading-relaxed overflow-x-auto">
+when 🚩 clicked
+set [Lives v] to (3)
+set [Score v] to (0)
+forever
+  if &lt;key [right arrow v] pressed?&gt; then
+    change x by (4)
+    if &lt;touching color [#Walls] ?&gt; then
+      change x by (-4) // ชนกำแพง ให้ถอยกลับ
+    end
+  end
+  if &lt;touching [Virus_Patrol v]?&gt; then
+    change [Lives v] by (-1)
+    broadcast [PlayDamageSound v]
+    go to x: (-200) y: (150) // Respawn
+  end
+end</pre>
+                        </div>
+
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <div class="text-purple-400 font-bold mb-2">// 2. ระบบเช็กพอยต์คำถามไซเบอร์ (Quiz Broadcast)</div>
+                            <pre class="text-slate-300 leading-relaxed overflow-x-auto">
+when 🚩 clicked
+forever
+  if &lt;touching [Quiz_Gate v]?&gt; and &lt;(IsQuizActive) = [False]&gt; then
+    set [IsQuizActive v] to [True]
+    broadcast [AskCyberQuestion v]
+  end
+end
+
+when I receive [AskCyberQuestion v]
+ask [ข้อใดคือการตั้งรหัสผ่านที่ปลอดภัยที่สุด?] and wait
+if &lt;(answer) = [3]&gt; then
+  change [Score v] by (100)
+  say [ถูกต้อง! รหัสผ่านผสมผสานสัญลักษณ์ปลอดภัยที่สุด] for (2) secs
+else
+  say [ยังไม่ถูกต้อง! ลองทบทวนเหตุผลอีกครั้งนะ] for (2) secs
+end
+set [IsQuizActive v] to [False]</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: AI GRAPHICS PROMPTS -->
+        <section id="ai-tab" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="image" class="text-pink-400"></i> 4. พรอมต์สำหรับสร้างงานกราฟิกด้วย AI (AI Prompts)
+                    </h2>
+                    <p class="text-sm text-slate-400">คัดลอกพรอมต์ภาษาอังกฤษด้านล่างไปใช้ใน Midjourney v6 หรือ DALL-E 3 เพื่อสร้าง Asset กราฟิกสไตล์ 2D Pixel Art</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Prompt 1 -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-bold text-cyan-300 flex items-center gap-2">
+                                <i data-lucide="user" class="w-4 h-4"></i> 1) ตัวละครหลัก (Main Character Sprite Sheet)
+                            </span>
+                            <button onclick="copyPrompt('prompt-1')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 rounded border border-slate-700 flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+                            </button>
+                        </div>
+                        <p id="prompt-1" class="text-xs font-mono bg-slate-900 p-3 rounded border border-slate-800 text-slate-300 leading-relaxed">
+                            2D pixel art sprite sheet of a cute 10-year-old student tech hero named Codie, wearing a blue futuristic hoodie, glowing VR goggles, top-down grid perspective, 4-direction walking animation (walk front, back, left, right), 16-bit retro arcade style, clean white background, isolated sprites --ar 16:9 --style raw
+                        </p>
+                    </div>
+
+                    <!-- Prompt 2 -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                                <i data-lucide="map" class="w-4 h-4"></i> 2) ฉากหลังและพื้นผิว (Tilemap / Cyber Terrain)
+                            </span>
+                            <button onclick="copyPrompt('prompt-2')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 rounded border border-slate-700 flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+                            </button>
+                        </div>
+                        <p id="prompt-2" class="text-xs font-mono bg-slate-900 p-3 rounded border border-slate-800 text-slate-300 leading-relaxed">
+                            2D top-down pixel art tilemap for a cyber security theme level, dark blue circuit board floor tiles, neon cyan wall barriers, glowing firewall gate, futuristic digital network grid aesthetic, seamless tileset, 16-bit video game asset --ar 16:9
+                        </p>
+                    </div>
+
+                    <!-- Prompt 3 -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-bold text-yellow-400 flex items-center gap-2">
+                                <i data-lucide="box" class="w-3 h-3"></i> 3) ไอคอนไอเทมและสิ่งกีดขวาง (Game Items & Hazards)
+                            </span>
+                            <button onclick="copyPrompt('prompt-3')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 rounded border border-slate-700 flex items-center gap-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i> คัดลอก
+                            </button>
+                        </div>
+                        <p id="prompt-3" class="text-xs font-mono bg-slate-900 p-3 rounded border border-slate-800 text-slate-300 leading-relaxed">
+                            Set of 2D pixel art game icons sprite sheet: 1) Glowing golden Logic Key, 2) Safe Data Gem shield, 3) Red malware virus bug enemy, 4) Suspicious Fake News envelope trap with a red exclamation mark, isolated on black background, crisp pixel art, game UI assets --ar 1:1
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: PEDAGOGICAL & ASSESSMENT GUIDE -->
+        <section id="pedagogy-tab" class="tab-content hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="text-emerald-400"></i> 5. คำแนะนำสำหรับการจัดกิจกรรมการเรียนรู้ (Pedagogical Guide)
+                    </h2>
+                    <p class="text-sm text-slate-400">แนวทางการนำเกมไปใช้จัดกิจกรรมในชั้นเรียน (4 คาบเรียน) พร้อมกิจกรรม Unplugged และเกณฑ์การประเมิน</p>
+                </div>
+
+                <!-- Classroom Activity Steps -->
+                <div class="grid md:grid-cols-4 gap-4 text-sm">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold">1</div>
+                        <h4 class="font-bold text-white">ขั้นที่ 1: Unplugged Analysis</h4>
+                        <p class="text-xs text-slate-400">ให้นักเรียนจับคู่เขียน **Flowchart (ผังงาน)** บนกระดาษเพื่อวางแผนขั้นตอนการแก้ปัญหา เช่น "หากพบไวรัสให้เดินหลบ อย่างไร" หรือ "การตรวจสอบข่าวปลอมมีขั้นตอนอย่างไร"</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold">2</div>
+                        <h4 class="font-bold text-white">ขั้นที่ 2: Plugged Exploration</h4>
+                        <p class="text-xs text-slate-400">ให้นักเรียนเข้าทดลองเล่นเกม **Cyber Logic Quest** เพื่อวิเคราะห์เงื่อนไข If-Then-Else ที่ซ่อนอยู่ในเกม และตอบคำถามจุดเช็กพอยต์ภัยไซเบอร์</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-yellow-600/20 text-yellow-400 flex items-center justify-center font-bold">3</div>
+                        <h4 class="font-bold text-white">ขั้นที่ 3: Scratch Modification</h4>
+                        <p class="text-xs text-slate-400">ให้นักเรียนเปิดโปรเจกต์ Scratch ต้นแบบ ปรับแต่งเงื่อนไข เช่น เพิ่มด่านคำถามใหม่เกี่ยวกับพฤติกรรมการบูลลี่ออนไลน์ (Cyberbullying) หรือปรับความเร็วศัตรู</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold">4</div>
+                        <h4 class="font-bold text-white">ขั้นที่ 4: Reflection & Discussion</h4>
+                        <p class="text-xs text-slate-400">อภิปรายสรุปบทเรียนร่วมกันในห้องเรียน: "เหตุใดตรรกะและอัลกอริทึมจึงช่วยให้เราตัดสินใจเลือกรับข้อมูลบนโลกออนไลน์ได้อย่างปลอดภัย?"</p>
+                    </div>
+                </div>
+
+                <!-- Assessment Rubric Table -->
+                <div class="bg-slate-950 p-5 rounded-xl border border-slate-800">
+                    <h3 class="text-md font-bold text-cyan-300 mb-4 flex items-center gap-2">
+                        <i data-lucide="check-square" class="w-5 h-5"></i> เกณฑ์การประเมินผลนักเรียน (Assessment Rubric - ป.5)
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-400 bg-slate-900">
+                                    <th class="p-3">ประเด็นการประเมิน</th>
+                                    <th class="p-3">ดีมาก (4)</th>
+                                    <th class="p-3">ดี (3)</th>
+                                    <th class="p-3">พอใช้ (2)</th>
+                                    <th class="p-3">ปรับปรุง (1)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800">
+                                <tr>
+                                    <td class="p-3 font-semibold text-white">1. การใช้เหตุผลเชิงตรรกะ</td>
+                                    <td class="p-3">เขียน Flowchart แก้ปัญหาได้ถูกต้องตามลำดับขั้นตอนชัดเจนทุกจุด</td>
+                                    <td class="p-3">เขียน Flowchart ได้ถูกต้องเป็นส่วนใหญ่ มีข้อผิดพลาดเล็กน้อย</td>
+                                    <td class="p-3">เขียน Flowchart ได้ แต่สลับลำดับเงื่อนไขบางจุด</td>
+                                    <td class="p-3">ไม่สามารถวางลำดับขั้นตอน Flowchart ได้</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-white">2. ความรู้ความเข้าใจภัยไซเบอร์</td>
+                                    <td class="p-3">ตอบคำถามเช็กพอยต์ไซเบอร์ถูกต้องครบทุกข้อ พร้อมอธิบายเหตุผลได้ถูกต้อง</td>
+                                    <td class="p-3">ตอบคำถามถูกต้อง 80% อธิบายเหตุผลได้เป็นส่วนใหญ่</td>
+                                    <td class="p-3">ตอบคำถามถูกต้อง 50% ต้องได้รับการแนะนำบางส่วน</td>
+                                    <td class="p-3">ตอบคำถามถูกต้องน้อยกว่า 50% และยังไม่เข้าใจเรื่องรหัสผ่าน/ข่าวปลอม</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-white">3. การประยุกต์ใช้ใน Scratch</td>
+                                    <td class="p-3">แก้ไขบล็อกเงื่อนไข If-Then-Else และสร้างคำถามใหม่ในโปรแกรมได้สมบูรณ์</td>
+                                    <td class="p-3">แก้ไขบล็อกเงื่อนไขได้ถูกต้อง โดยมีครูชี้แนะเล็กน้อย</td>
+                                    <td class="p-3">ปรับเปลี่ยนค่าตัวแปรได้ แต่ยังสับสนการใช้ Broadcast</td>
+                                    <td class="p-3">ยังไม่สามารถแก้ไขบล็อกโปรแกรม Scratch ได้</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 Cyber Logic Quest - สื่อการสอนวิชาวิทยาการณ์คำนวณ ระดับชั้นประถมศึกษาปีที่ 5</p>
+    </footer>
+
+    <!-- JavaScript Game Logic & Interactive Controls -->
+    <script>
+        // --- Tab Navigation ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow');
+                btn.classList.add('text-slate-300');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
+                activeBtn.classList.remove('text-slate-300');
+            }
+        }
+
+        // --- Sound Engine (Web Audio API - No External Files Required) ---
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const text = document.getElementById('sound-text');
+            if (soundEnabled) {
+                icon.setAttribute('data-lucide', 'volume-2');
+                icon.className = "w-4 h-4 text-green-400";
+                text.innerText = "เปิดเสียง";
+            } else {
+                icon.setAttribute('data-lucide', 'volume-x');
+                icon.className = "w-4 h-4 text-red-400";
+                text.innerText = "ปิดเสียง";
+            }
+            lucide.createIcons();
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'item') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, now); // D5
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.15); // A5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'hit') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(60, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'win') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'quiz') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+        }
+
+        // --- 2D CANVAS GAME ENGINE ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game Configuration
+        const TILE_SIZE = 50; // 16x12 Grid = 800x600 Canvas
+        const COLS = 16;
+        const ROWS = 12;
+
+        // Map Grid Design: 1 = Wall, 0 = Path, 2 = Key, 3 = Quiz Gate, 4 = Exit Door, 5 = Data Gem
+        const MAP = [
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,0,0,0,1,5,0,0,0,1,0,0,0,2,0,1],
+            [1,0,1,0,1,0,1,1,0,1,0,1,1,1,0,1],
+            [1,2,1,0,0,0,0,1,0,3,0,1,5,0,0,1],
+            [1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,0,1,1,0,1,1,1,1,0,1],
+            [1,0,5,0,3,1,0,1,2,0,1,3,0,5,0,1],
+            [1,1,1,1,0,1,0,1,1,1,1,0,1,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,1,1,1,1,1,1,1,1,1,4,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        ];
+
+        // Quiz Questions Data (Aligned with Grade 5 CS Standards)
+        const QUIZ_QUESTIONS = [
+            {
+                q: "1. เพื่อนส่งลิงก์ไลน์แจก 'เพชรเกมฟรี' มาให้ โดยให้กรอกเบอร์โทรและรหัสผ่าน Facebook คุณควรทำอย่างไร?",
+                options: [
+                    "ก. รีบกรอกข้อมูลทันทีเพื่อรับเพชรฟรี",
+                    "ข. ตรวจสอบที่มา ลิงก์น่าสงสัย ห้ามกรอกรหัสผ่าน และแจ้งครูหรือผู้ปกครอง",
+                    "ค. ส่งลิงก์ต่อให้เพื่อนคนอื่นทันที"
+                ],
+                correct: 1,
+                exp: "ถูกต้อง! ลิงก์ที่หลอกให้กรอกรหัสผ่านมักเป็น Phishing ห้ามกรอกรหัสผ่านเด็ดขาด และควรแจ้งผู้ปกครอง"
+            },
+            {
+                q: "2. หากต้องการตั้งรหัสผ่าน (Password) บัญชีเรียนออนไลน์ให้ปลอดภัยที่สุด ควรเลือกรูปแบบใด?",
+                options: [
+                    "ก. 12345678 (จำง่ายดี)",
+                    "关. วันเดือนปีเกิดของตนเอง",
+                    "ค. ผสมผสานตัวอักษรใหญ่ เล็ก ตัวเลข และสัญลักษณ์ เช่น 'P@ssW0rd_2026'"
+                ],
+                correct: 2,
+                exp: "ถูกต้อง! รหัสผ่านที่ดีควรมีความยาว 8 ตัวอักษรขึ้นไป และผสมผสานตัวอักษร ตัวเลข และสัญลักษณ์พิเศษ"
+            },
+            {
+                q: "3. พิจารณาเงื่อนไขตรรกะ: 'ถ้าราคาสินค้า > 500 บาท จะได้ส่วนลด 10%' หากสินค้าราคา 500 บาทพอดี จะได้ส่วนลดหรือไม่?",
+                options: [
+                    "ก. ได้รับส่วนลด 10%",
+                    "ข. ไม่ได้รับส่วนลด (เพราะ 500 ไม่ได้มากกว่า 500)",
+                    "ค. ได้รับส่วนลด 5%"
+                ],
+                correct: 1,
+                exp: "ถูกต้อง! เครื่องหมายมากกว่า ( > ) หมายถึงต้องเกิน 500 บาท ดังนั้น 500 บาทจึงไม่เข้าเงื่อนไข"
+            }
+        ];
+
+        // Game State Variables
+        let gameState = 'START'; // 'START', 'PLAYING', 'QUIZ', 'GAMEOVER', 'VICTORY'
+        let player = { x: 1, y: 1, px: 50, py: 50, speed: 4, dir: 'down' };
+        let score = 0;
+        let lives = 3;
+        let keysCollected = 0;
+        let timer = 120;
+        let timerInterval = null;
+        let currentQuizIndex = 0;
+        let activeQuizGateTile = null;
+
+        // Items and Hazards Instances
+        let items = [];
+        let enemies = [];
+        let gates = [];
+
+        // Input Handling
+        const keysPressed = {};
+
+        window.addEventListener('keydown', (e) => {
+            keysPressed[e.key] = true;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keysPressed[e.key] = false;
+        });
+
+        function handleTouch(dir) {
+            if (gameState !== 'PLAYING') return;
+            let targetX = player.px;
+            let targetY = player.py;
+            const step = TILE_SIZE;
+
+            if (dir === 'Up') targetY -= step;
+            if (dir === 'Down') targetY += step;
+            if (dir === 'Left') targetX -= step;
+            if (dir === 'Right') targetX += step;
+
+            if (!checkWallCollision(targetX, targetY)) {
+                player.px = targetX;
+                player.py = targetY;
+            }
+        }
+
+        function initGameObjects() {
+            items = [];
+            enemies = [
+                { x: 5, y: 5, px: 5 * TILE_SIZE, py: 5 * TILE_SIZE, dirX: 1, dirY: 0, speed: 2, type: 'virus' },
+                { x: 10, y: 9, px: 10 * TILE_SIZE, py: 9 * TILE_SIZE, dirX: -1, dirY: 0, speed: 2.5, type: 'fakenews' }
+            ];
+            gates = [];
+
+            // Parse Map Tiles
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    const tile = MAP[r][c];
+                    if (tile === 2) {
+                        items.push({ x: c, y: r, px: c * TILE_SIZE + 12, py: r * TILE_SIZE + 12, type: 'key', active: true });
+                    } else if (tile === 5) {
+                        items.push({ x: c, y: r, px: c * TILE_SIZE + 15, py: r * TILE_SIZE + 15, type: 'gem', active: true });
+                    } else if (tile === 3) {
+                        gates.push({ x: c, y: r, active: true, questionIdx: gates.length % QUIZ_QUESTIONS.length });
+                    }
+                }
+            }
+
+            player.px = 1 * TILE_SIZE + 10;
+            player.py = 1 * TILE_SIZE + 10;
+            score = 0;
+            lives = 3;
+            keysCollected = 0;
+            timer = 120;
+            currentQuizIndex = 0;
+            updateHUD();
+        }
+
+        function startGame() {
+            document.getElementById('start-overlay').classList.add('hidden');
+            document.getElementById('gameover-overlay').classList.add('hidden');
+            document.getElementById('victory-overlay').classList.add('hidden');
+            document.getElementById('quiz-overlay').classList.add('hidden');
+
+            initGameObjects();
+            gameState = 'PLAYING';
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameState === 'PLAYING') {
+                    timer--;
+                    updateHUD();
+                    if (timer <= 0) {
+                        triggerGameOver("หมดเวลาแล้ว! ไม่สามารถแก้ไขระบบไซเบอร์ได้ทันเวลา");
+                    }
+                }
+            }, 1000);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-score').innerText = score;
+            document.getElementById('hud-lives').innerText = '❤️'.repeat(Math.max(0, lives));
+            document.getElementById('hud-keys').innerText = `${keysCollected} / 3`;
+            document.getElementById('hud-timer').innerText = `${timer} วิ`;
+        }
+
+        function checkWallCollision(newPx, newPy) {
+            const size = 30; // Player Bounding Box Size
+            const corners = [
+                { x: newPx, y: newPy },
+                { x: newPx + size, y: newPy },
+                { x: newPx, y: newPy + size },
+                { x: newPx + size, y: newPy + size }
+            ];
+
+            for (let pt of corners) {
+                let c = Math.floor(pt.x / TILE_SIZE);
+                let r = Math.floor(pt.y / TILE_SIZE);
+                if (r >= 0 && r < ROWS && c >= 0 && c < COLS) {
+                    if (MAP[r][c] === 1) return true; // Wall
+                }
+            }
+            return false;
+        }
+
+        function updatePlayer() {
+            let nextPx = player.px;
+            let nextPy = player.py;
+
+            if (keysPressed['ArrowUp'] || keysPressed['w'] || keysPressed['W']) {
+                nextPy -= player.speed;
+                player.dir = 'up';
+            }
+            if (keysPressed['ArrowDown'] || keysPressed['s'] || keysPressed['S']) {
+                nextPy += player.speed;
+                player.dir = 'down';
+            }
+            if (keysPressed['ArrowLeft'] || keysPressed['a'] || keysPressed['A']) {
+                nextPx -= player.speed;
+                player.dir = 'left';
+            }
+            if (keysPressed['ArrowRight'] || keysPressed['d'] || keysPressed['D']) {
+                nextPx += player.speed;
+                player.dir = 'right';
+            }
+
+            if (!checkWallCollision(nextPx, player.py)) player.px = nextPx;
+            if (!checkWallCollision(player.px, nextPy)) player.py = nextPy;
+
+            // Player Grid Tile Coordinates
+            const centerC = Math.floor((player.px + 15) / TILE_SIZE);
+            const centerR = Math.floor((player.py + 15) / TILE_SIZE);
+
+            // Item Collisions
+            items.forEach(item => {
+                if (item.active && Math.abs(player.px - item.px) < 30 && Math.abs(player.py - item.py) < 30) {
+                    item.active = false;
+                    if (item.type === 'key') {
+                        keysCollected++;
+                        score += 200;
+                        playSound('item');
+                    } else if (item.type === 'gem') {
+                        score += 100;
+                        playSound('item');
+                    }
+                    updateHUD();
+                }
+            });
+
+            // Quiz Gate Collisions
+            gates.forEach(gate => {
+                if (gate.active && centerC === gate.x && centerR === gate.y) {
+                    openQuizModal(gate);
+                }
+            });
+
+            // Master Exit Door Collision
+            if (MAP[centerR][centerC] === 4) {
+                if (keysCollected >= 3) {
+                    triggerVictory();
+                }
+            }
+        }
+
+        function updateEnemies() {
+            enemies.forEach(e => {
+                let nextPx = e.px + e.dirX * e.speed;
+                let nextPy = e.py + e.dirY * e.speed;
+
+                if (checkWallCollision(nextPx, nextPy)) {
+                    e.dirX *= -1;
+                    e.dirY *= -1;
+                } else {
+                    e.px = nextPx;
+                    e.py = nextPy;
+                }
+
+                // Hit Player Detection
+                if (Math.abs(player.px - e.px) < 25 && Math.abs(player.py - e.py) < 25) {
+                    lives--;
+                    playSound('hit');
+                    updateHUD();
+                    // Respawn player
+                    player.px = 1 * TILE_SIZE + 10;
+                    player.py = 1 * TILE_SIZE + 10;
+
+                    if (lives <= 0) {
+                        triggerGameOver("พลังชีวิตหมดลงจากการถูกไวรัสโจมตี!");
+                    }
+                }
+            });
+        }
+
+        // --- QUIZ SYSTEM ---
+        function openQuizModal(gate) {
+            gameState = 'QUIZ';
+            activeQuizGateTile = gate;
+            playSound('quiz');
+
+            const qData = QUIZ_QUESTIONS[gate.questionIdx];
+            document.getElementById('quiz-question').innerText = qData.q;
+            const optsContainer = document.getElementById('quiz-options');
+            optsContainer.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm font-medium text-slate-200 transition flex items-center justify-between";
+                btn.innerText = opt;
+                btn.onclick = () => checkQuizAnswer(idx, qData.correct, qData.exp);
+                optsContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-explanation').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+            document.getElementById('quiz-overlay').classList.remove('hidden');
+        }
+
+        function checkQuizAnswer(selectedIdx, correctIdx, expText) {
+            const expBox = document.getElementById('quiz-explanation');
+            expBox.classList.remove('hidden');
+
+            if (selectedIdx === correctIdx) {
+                expBox.className = "p-3 bg-emerald-950/80 border border-emerald-600/50 text-emerald-300 rounded-xl text-xs mb-4";
+                expBox.innerHTML = `<strong>✨ ถูกต้อง!</strong> ${expText}`;
+                score += 150;
+                playSound('win');
+                if (activeQuizGateTile) activeQuizGateTile.active = false;
+            } else {
+                expBox.className = "p-3 bg-red-950/80 border border-red-600/50 text-red-300 rounded-xl text-xs mb-4";
+                expBox.innerHTML = `<strong>❌ ยังไม่ถูกต้อง!</strong> ${expText}`;
+                playSound('hit');
+            }
+
+            updateHUD();
+            // Disable options
+            document.querySelectorAll('#quiz-options button').forEach(b => b.disabled = true);
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function closeQuiz() {
+            document.getElementById('quiz-overlay').classList.add('hidden');
+            gameState = 'PLAYING';
+            requestAnimationFrame(gameLoop);
+        }
+
+        function triggerGameOver(reason) {
+            gameState = 'GAMEOVER';
+            clearInterval(timerInterval);
+            document.getElementById('gameover-reason').innerText = reason;
+            document.getElementById('gameover-overlay').classList.remove('hidden');
+        }
+
+        function triggerVictory() {
+            gameState = 'VICTORY';
+            clearInterval(timerInterval);
+            playSound('win');
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-time').innerText = `${120 - timer} วินาที`;
+
+            let rank = "Cyber Apprentice";
+            if (score >= 800) rank = "Cyber Master Hero (ระดับดีเยี่ยม)";
+            else if (score >= 500) rank = "Cyber Defender (ระดับดี)";
+
+            document.getElementById('final-rank').innerText = rank;
+            document.getElementById('victory-overlay').classList.remove('hidden');
+        }
+
+        // --- RENDERING LOOP ---
+        function render() {
+            // Clear Canvas
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Map Grid
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    const tile = MAP[r][c];
+                    const x = c * TILE_SIZE;
+                    const y = r * TILE_SIZE;
+
+                    if (tile === 1) { // Wall Barrier
+                        ctx.fillStyle = '#1e293b';
+                        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = '#3b82f6';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(x + 2, y + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                    } else { // Pathway Grid
+                        ctx.strokeStyle = '#1e293b';
+                        ctx.lineWidth = 0.5;
+                        ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
+                    }
+
+                    if (tile === 4) { // Master Exit Door
+                        ctx.fillStyle = keysCollected >= 3 ? '#10b981' : '#64748b';
+                        ctx.fillRect(x + 5, y + 5, TILE_SIZE - 10, TILE_SIZE - 10);
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = '12px Kanit';
+                        ctx.fillText(keysCollected >= 3 ? 'EXIT' : 'LOCKED', x + 8, y + 30);
+                    }
+                }
+            }
+
+            // Draw Quiz Gates
+            gates.forEach(g => {
+                if (g.active) {
+                    const x = g.x * TILE_SIZE;
+                    const y = g.y * TILE_SIZE;
+                    ctx.fillStyle = '#a855f7';
+                    ctx.fillRect(x + 8, y + 8, TILE_SIZE - 16, TILE_SIZE - 16);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 18px Kanit';
+                    ctx.fillText('?', x + 20, y + 32);
+                }
+            });
+
+            // Draw Items (Keys and Data Gems)
+            items.forEach(item => {
+                if (item.active) {
+                    if (item.type === 'key') {
+                        ctx.fillStyle = '#06b6d4'; // Cyan Key
+                        ctx.beginPath();
+                        ctx.arc(item.px + 12, item.py + 12, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 10px Kanit';
+                        ctx.fillText('🔑', item.px + 5, item.py + 16);
+                    } else if (item.type === 'gem') {
+                        ctx.fillStyle = '#eab308'; // Gold Gem
+                        ctx.fillRect(item.px, item.py, 18, 18);
+                    }
+                }
+            });
+
+            // Draw Enemies
+            enemies.forEach(e => {
+                ctx.fillStyle = e.type === 'virus' ? '#ef4444' : '#f97316';
+                ctx.beginPath();
+                ctx.arc(e.px + 15, e.py + 15, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px Kanit';
+                ctx.fillText(e.type === 'virus' ? '👾' : '⚠️', e.px + 7, e.py + 20);
+            });
+
+            // Draw Player (Codie)
+            ctx.fillStyle = '#3b82f6'; // Player Blue Body
+            ctx.fillRect(player.px, player.py, 30, 30);
+            ctx.fillStyle = '#38bdf8'; // Goggles
+            ctx.fillRect(player.px + 5, player.py + 6, 20, 8);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px Kanit';
+            ctx.fillText('C', player.px + 11, player.py + 26);
+        }
+
+        function gameLoop() {
+            if (gameState === 'PLAYING') {
+                updatePlayer();
+                updateEnemies();
+                render();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Prompt Copy Tool
+        function copyPrompt(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('คัดลอกพรอมต์ AI เรียบร้อยแล้ว!');
+            });
+        }
+
+        // Initialize Lucide Icons & Canvas Render on load
+        window.onload = () => {
+            lucide.createIcons();
+            render();
+        };
+    </script>
+</body>
+</html>
